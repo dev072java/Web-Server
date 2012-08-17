@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<config>
+    <port>8089</port>
+    <web-root>D:\SoftServe IT Academy\WebServer\WebServer</web-root>
+    <mime-types>html css js gif</mime-types>
+    <max-connections>500</max-connections>
+</config>
