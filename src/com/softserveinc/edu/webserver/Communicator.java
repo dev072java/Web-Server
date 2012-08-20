@@ -17,11 +17,38 @@ abstract public class Communicator {
 	Thread serverThread;
 	TaskQueue taskQueue;
 	Thread queueThread;
+	boolean isRunning = true;
 
+	public void stop()
+	{
+		isRunning =  false;
+		shutdownServer();
+		try {
+			serverSoket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	public void start()
+	{
+		isRunning =  true;
+		try {
+			serverSoket = new ServerSocket(configurator.getPort());
+			taskQueue = new TaskQueue();
+			queueThread = new Thread(taskQueue);
+			queueThread.setDaemon(true);
+			queueThread.start();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
 	public class SocketProcessor implements Runnable {
 
-		boolean isRequestTextLoader = false; // true if all text of request is
-												// loader to server
+		// true if all text of request is
+		// loader to server
+		boolean isRequestTextLoader = false; 
 		Socket socket; // socket - socket connection object
 		InputStream inputStream;
 		OutputStream outputStream;
@@ -129,5 +156,18 @@ abstract public class Communicator {
 				}
 			}
 		}
+	}
+
+	public void shutdownServer() {
+		for (SocketProcessor socketProcessor : taskQueue.queue) {
+			socketProcessor.close();
+		}
+		if (!serverSoket.isClosed()) {
+			try {
+				serverSoket.close();
+			} catch (IOException ignored) {
+			}
+		}
+		
 	}
 }
